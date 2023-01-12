@@ -27,7 +27,7 @@ def import_training_data(dir_name):
 	x_train = []
 	with open(DATA_DIR + dir_name + '//driving_log.csv') as f:
 		for line in f.readlines():
-			x_train.append(line.split())
+			x_train.append(line.split(','))
 
 	# Sort based on time.
 	x_train.sort(key=cmp_to_key(cmp))
