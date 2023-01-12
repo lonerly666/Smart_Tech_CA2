@@ -44,9 +44,9 @@ def import_training_data(dir_name):
 
 	# Convert image paths to image objects.
 	for data in x_train:
-		x_train[0] = mpimg.imread(x_train[0])
-		x_train[1] = mpimg.imread(x_train[1])
-		x_train[1] = mpimg.imread(x_train[2])
+		data[0] = mpimg.imread(data[0])
+		data[1] = mpimg.imread(data[1])
+		data[1] = mpimg.imread(data[2])
 
 	return x_train, y_train
 
