@@ -1,58 +1,59 @@
 from dotenv import load_dotenv
 import os
 from functools import cmp_to_key
+from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
+import pandas as pd
+import numpy as np
+from sklearn.utils import shuffle
 
 load_dotenv()
-
-# import the images and the data
-# sort the data
-# set label correctly
-# replace image paths with image objects
 
 ROOT_DIR = os.getenv('ROOT_DIR') 
 DATA_DIR = ROOT_DIR + '//data//'
 
-def cmp(a, b):
-	if a[0] < b[0]:
-		return -1
-	if a[0] > b[0]:
-		return 1
-	return 0
-
-# dir_name represents the data directory, e.g., track1 contains
-# data from track 1, recovery contains data related to recovering
-# the position of the car to the center of the road.
-def import_training_data(dir_name):
-	x_train = []
-	with open(DATA_DIR + dir_name + '//driving_log.csv') as f:
-		for line in f.readlines():
-			x_train.append(line.split(','))
-
-	# Sort based on time.
-	x_train.sort(key=cmp_to_key(cmp))
-
-	y_train = []
-
-	# Label for time t is the data at time t + 1.
-	# For each time t, the label includes the throttle, rotation and break.
-	for i in range(len(x_train)):
-		if i == len(x_train) - 1:
-			y_train.append(x_train[i][3:6])
-		else:
-			y_train.append(x_train[i + 1][3:6])
-
-	# Convert image paths to image objects.
-	for data in x_train:
-		data[0] = mpimg.imread(data[0])
-		data[1] = mpimg.imread(data[1])
-		data[1] = mpimg.imread(data[2])
-
-	return x_train, y_train
-
 def extract_data():
-	x_train, y_train = import_training_data('track1')
-	x_temp, y_temp = import_training_data('recovery')
-	x_train.extend(x_temp)
-	y_train.extend(y_temp)
+	columns=['center', 'left', 'right', 'steering', 'throttle', 'reverse', 'speed']
+	data = pd.read_csv(DATA_DIR + 'track1' + '//driving_log.csv', names=columns)
+	pd.set_option('display.max_columns', 10)
+
+	data.sort_values(by='center', ascending=True)
+
+	data['label_steering'] = data['steering'].shift(-1)
+	data['label_throttle'] = data['throttle'].shift(-1)
+	data['label_reverse'] = data['reverse'].shift(-1)
+	data.dropna(inplace=True)
+
+	num_bins = 25
+	samples_per_bin = 400
+	hist, bins = np.histogram(data['label_steering'], num_bins)
+	centre = (bins[:-1] + bins[1:])*0.5
+	plt.bar(centre, hist, width=0.05)
+	plt.plot((np.min(data['label_steering']), np.max(data['label_steering'])), (samples_per_bin, samples_per_bin))
+	plt.show()
+
+	remove_list=[]
+	print('Total data: ', len(data))
+
+	for j in range(num_bins):
+	    list_ = []
+	    for i in range(len(data['label_steering'])):
+	        if bins[j] <= data['label_steering'][i] <= bins[j+1]:
+	            list_.append(i)
+	    list_ = shuffle(list_)
+	    list_ = list_[samples_per_bin:]
+	    remove_list.extend(list_)
+
+	print("Remove: ", len(remove_list))
+	data.drop(data.index[remove_list], inplace=True)
+	print("Remaining: ", len(data))
+
+	hist, bins = np.histogram(data['label_steering'], num_bins)
+	plt.bar(centre, hist, width=0.05)
+	plt.plot((np.min(data['label_steering']), np.max(data['label_steering'])), (samples_per_bin, samples_per_bin))
+	plt.show()
+
+	x_train = data[columns[:]].values
+	y_train = data[['label_steering', 'label_throttle', 'label_reverse']].values
+
 	return x_train, y_train
