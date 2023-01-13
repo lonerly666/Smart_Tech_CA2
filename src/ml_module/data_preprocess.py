@@ -1,5 +1,4 @@
 import cv2
-from imgaug import augmenters as iaa
 from keras.utils.np_utils import to_categorical
 
 def preprocess_img(img):
