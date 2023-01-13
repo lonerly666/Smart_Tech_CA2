@@ -1,4 +1,6 @@
 import cv2
+from imgaug import augmenters as iaa
+from keras.utils.np_utils import to_categorical
 
 def preprocess_img(img):
     img = img[60:135,:,:]
@@ -7,8 +9,6 @@ def preprocess_img(img):
     img = cv2.resize(img, (200,66))
     img = img/255
     return img
-
-
 
 
 def data_preprocess(x_train, y_train):
