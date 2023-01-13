@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 def preprocess_img(img):
     img = img[60:135,:,:]
@@ -10,8 +11,7 @@ def preprocess_img(img):
     return img
 
 def split_data(x_train, y_train):
-    x_train, x_valid = np.split(x_train, [int(len(x_train)*0.3)])
-    y_train, y_valid = np.split(y_train, [int(len(y_train)*0.3)])
+    x_train,y_train,x_valid,y_valid = train_test_split(x_train, y_train, test_size=0.3, random_state=6)
     return x_train, y_train, x_valid, y_valid
 
 
