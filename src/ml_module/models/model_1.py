@@ -6,6 +6,7 @@ from keras.layers import Dropout
 from keras.layers import Dense, PReLU
 from keras.optimizers import Adam
 from matplotlib import pyplot as plt
+from keras.models import load_model
 from .model import Model
 import numpy as np
 from .commons import batch_generator
@@ -42,11 +43,13 @@ class Model_1(Model):
 		new_x_val = np.asarray([data[0] for data in x_val])
 		new_y_train = np.asarray([data[0] for data in y_train])
 		new_y_val = np.asarray([data[0] for data in y_val])
-
-		history = self.model.fit(batch_generator(new_x_train, new_y_train, 500, 1), steps_per_epoch=100, epochs=30, validation_data=batch_generator(new_x_val, new_y_val, 200, 0), validation_steps=100, verbose=1, shuffle=1)	
+		history = self.model.fit(batch_generator(new_x_train, new_y_train, 100, 1), steps_per_epoch=80, epochs=20, validation_data=batch_generator(new_x_val, new_y_val, 100, 0), validation_steps=80, verbose=1, shuffle=1)	
 		plt.plot(history.history['loss'])
 		plt.plot(history.history['val_loss'])
 		plt.legend(['training', 'validation'])
 		plt.title('Loss')
 		plt.xlabel('epoch')
 		plt.show()
+
+	def load(self, path):
+		self.model = load_model(path)

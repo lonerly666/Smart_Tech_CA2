@@ -38,16 +38,16 @@ def preprocess_img_no_imread(img):
     return img
 
 def random_augment(image_to_augment, steering_angle):
-	augment_image = mpimg.imread(image_to_augment)
-	if np.random.rand() < 0.5:
-		augment_image = zoom(augment_image)
-	if np.random.rand() < 0.5:
-		augment_image = pan(augment_image)
-	if np.random.rand() < 0.5:
-		augment_image = img_random_brightness(augment_image)
-	if np.random.rand() < 0.5:
-		augment_image, steering_angle = img_random_flip(augment_image, steering_angle)
-	return augment_image, steering_angle
+    augment_image = mpimg.imread(image_to_augment)
+    if np.random.rand() < 0.5:
+        augment_image = zoom(augment_image)
+    if np.random.rand() < 0.5:
+        augment_image = pan(augment_image)
+    if np.random.rand() < 0.5:
+        augment_image = img_random_brightness(augment_image)
+    if np.random.rand() < 0.5:
+        augment_image, steering_angle = img_random_flip(augment_image, steering_angle)
+    return augment_image, steering_angle
 
 
 def batch_generator(image_paths, steering_ang, batch_size, is_training):
